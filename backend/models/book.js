@@ -1,8 +1,9 @@
 const mongoose = require('mongoose'),
-    schema = new mongoose.Schema({
+	schema = new mongoose.Schema({
         title: String,
-        date: String,
-        image: String
-    })
+        description: String,
+		date: String,
+		imageId: mongoose.Schema.Types.ObjectId // Reference to the image stored in GridFS
+	})
 
 module.exports = mongoose.model('book', schema)
