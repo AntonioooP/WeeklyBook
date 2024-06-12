@@ -4,7 +4,6 @@ const app = require('express')()
 const mongoose = require('mongoose')
 const multer = require('multer')
 const bodyParser = require('body-parser')
-const fs = require('fs')
 
 const Book = require('./models/book')
 
