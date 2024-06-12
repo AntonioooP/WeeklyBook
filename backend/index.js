@@ -7,8 +7,10 @@ const {GridFsStorage} = require('multer-gridfs-storage')
 const Grid = require('gridfs-stream')
 const methodOverride = require('method-override')
 const bodyParser = require('body-parser')
-
+const mongo = require('mongodb')
 const mongoURI = process.env.mongo
+
+const Book = require('./models/book')
 
 app.use(bodyParser.json())
 app.use(methodOverride('_method'))
@@ -21,7 +23,7 @@ conn.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 let gfs
 conn.once('open', () => {
-	gfs = Grid(conn.db, mongoose.mongo)
+	gfs = Grid(conn.db, mongo)
 	gfs.collection('uploads')
     console.log('GridFS connection established')
 })
@@ -68,6 +70,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 		await newBook.save()
 		res.status(201).send('Book created successfully')
 	} catch (error) {
+		console.log(error)
 		res.status(500).send('Error saving book')
 	}
 })
