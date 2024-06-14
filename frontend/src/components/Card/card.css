@@ -1,0 +1,58 @@
+/* Card Container */
+.card {
+    background-color: #E3F2FD; /* Soft Blue */
+    border: 1px solid #F2F2F2; /* Light Gray */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin: 16px 0;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: scale(1.015);
+}
+
+/* Card Header */
+.card h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #1565C0; /* Dark Blue */
+    margin-bottom: 8px;
+}
+
+/* Card Content */
+.card p {
+    font-size: 1em;
+    color: #757575; /* Medium Gray */
+    margin-bottom: 16px;
+}
+
+
+.button {
+    background-color: #BBDEFB; /* Light Blue */
+    color: #1565C0; /* Dark Blue */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 1em;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.button:hover {
+    background-color: #90CAF9; /* Slightly darker Light Blue */
+}
+
+/* Example Usage */
+.card h2,
+.card p {
+    margin: 0 16px;
+}
+
+.card img {
+    user-select: none;
+    -webkit-user-drag: none;
+}
