@@ -30,6 +30,24 @@ app.get('/books', async (req, res) => {
 	}
 })
 
+app.get('/bookData/:id', async (req, res) => {
+	try {
+		const book = await Book.findById(req.params.id)
+		if (!book) return res.status(404).send('Book not found')
+
+		const jsonData = {
+			title: book.title,
+			date: book.date,
+			description: book.description,
+			id: book._id
+		}
+
+		res.json(jsonData)
+	} catch (error) {
+		console.log(error)
+		res.status(500).send('Error retrieving book')
+	}
+})
 
 app.post('/upload', upload.single('file'), async (req, res) => {
 	const {title, date, description} = req.body
