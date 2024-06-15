@@ -49,6 +49,21 @@ app.get('/bookData/:id', async (req, res) => {
 	}
 })
 
+
+app.get('/image/:id', async (req, res) => {
+	try {
+		const book = await Book.findById(req.params.id)
+		if (!book) return res.status(404).send('Book not found')
+
+		const imageBuffer = Buffer.from(book.image, 'base64')
+		res.set('Content-Type', 'image/png')
+		res.send(imageBuffer)
+	} catch (error) {
+		console.log(error)
+		res.status(500).send('Error retrieving book')
+	}
+})
+
 app.post('/upload', upload.single('file'), async (req, res) => {
 	const {title, date, description} = req.body
 	if (!req.file) return res.status(400).send('File upload failed')
