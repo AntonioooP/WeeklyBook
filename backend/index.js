@@ -4,39 +4,33 @@ const app = require('express')()
 const mongoose = require('mongoose')
 const multer = require('multer')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 
 const Book = require('./models/book')
 
 app.use(bodyParser.json())
+app.use(cors())
 
-const conn = mongoose.connect(process.env.mongo, {
-	useNewUrlParser: true,
-	useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected')).catch(error => console.log(error))
+ mongoose.connect(process.env.mongo, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	})
+	.then(() => console.log('MongoDB connected'))
+	.catch((error) => console.log(error))
 
 const storage = multer.memoryStorage()
-const upload = multer({ storage })
-
-app.get('/books/:id', async (req, res) => {
+const upload = multer({storage})
+app.get('/books', async (req, res) => {
 	try {
-		const book = await Book.findById(req.params.id)
-		if (!book) return res.status(404).send('Book not found')
-
-		if (book.image) {
-			const imgBuffer = Buffer.from(book.image, 'base64') // Convert Base64 back to Buffer
-			res.writeHead(200, {
-				'Content-Type': 'image/jpeg',
-				'Content-Length': imgBuffer.length
-			})
-			res.end(imgBuffer)
-		} else {
-			res.status(404).send('No image found')
-		}
+		const books = await Book.find()
+		res.json(books.map(x => x._id))
 	} catch (error) {
 		console.log(error)
-		res.status(500).send('Error retrieving book')
+		res.status(500).send('Error retrieving books')
 	}
 })
+
+
 app.post('/upload', upload.single('file'), async (req, res) => {
 	const {title, date, description} = req.body
 	if (!req.file) return res.status(400).send('File upload failed')
