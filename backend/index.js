@@ -65,15 +65,17 @@ app.get('/image/:id', async (req, res) => {
 })
 
 app.post('/upload', upload.single('file'), async (req, res) => {
-	const {title, date, description} = req.body
+	const {title, description, pass} = req.body
 	if (!req.file) return res.status(400).send('File upload failed')
-
+	if (!title && !description && !pass) return res.status(400).send('Missing parameters')
+	if (pass != process.env.password) return res.status(401).send('Incorrect password')
+	
 	const imageBuffer = req.file.buffer
 	const imageBase64 = imageBuffer.toString('base64') // Convert image to Base64
 
 	const newBook = new Book({
 		title,
-		date,
+		date: new Date().toLocaleDateString('es-MX'),
 		description,
 		image: imageBase64
 	})
