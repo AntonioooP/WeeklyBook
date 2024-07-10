@@ -30,6 +30,23 @@ app.get('/books', async (req, res) => {
 	}
 })
 
+app.get('/random', async (req, res) => {
+	try {
+		const randomBook = await Book.aggregate([{$sample: {size: 1}}])
+		if (!randomBook || randomBook.length === 0) return res.status(404).send('No books found')
+		const jsonData = {
+			title: randomBook[0].title,
+			date: randomBook[0].date,
+			description: randomBook[0].description,
+			id: randomBook[0]._id
+		}
+		res.json(jsonData)
+	} catch (error) {
+		console.log(error)
+		res.status(500).send('Error retrieving random book')
+	}
+})
+
 app.get('/bookData/:id', async (req, res) => {
 	try {
 		const book = await Book.findById(req.params.id)
