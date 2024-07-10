@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {createBrowserRouter, RouterProvider} from 'react-router-dom'
 import App from './App.jsx'
+import Random from './Random.jsx'
 import Upload from './Upload.jsx'
 import './index.css'
 const router = createBrowserRouter([
@@ -11,7 +12,7 @@ const router = createBrowserRouter([
 	},
 	{
 		path: '/random',
-		element: <App />
+		element: <Random />
 	},
 	{
 		path: '/upload',
