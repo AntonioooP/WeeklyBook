@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const multer = require('multer')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const crypto = require('crypto')
 
 const Book = require('./models/book')
 
@@ -19,7 +20,29 @@ app.use(cors())
 	.catch((error) => console.log(error))
 
 const storage = multer.memoryStorage()
-const upload = multer({storage})
+const upload = multer({ storage })
+
+function decrypt(text, key) {
+	const data = atob(text)
+		.split('')
+		.map((char) => char.charCodeAt(0))
+	const iv = new Uint8Array(data.slice(0, 16))
+	const encryptedData = new Uint8Array(data.slice(16))
+	const keyBuffer = new TextEncoder().encode(key)
+	return crypto.subtle.importKey('raw', keyBuffer, 'AES-GCM', false, ['decrypt']).then((cryptoKey) =>
+		crypto.subtle
+			.decrypt(
+				{
+					name: 'AES-GCM',
+					iv: iv
+				},
+				cryptoKey,
+				encryptedData
+			)
+			.then((decrypted) => new TextDecoder().decode(decrypted))
+	)
+}
+
 app.get('/books', async (req, res) => {
 	try {
 		const books = await Book.find()
@@ -82,7 +105,9 @@ app.get('/image/:id', async (req, res) => {
 })
 
 app.post('/upload', upload.single('file'), async (req, res) => {
-	const {title, description, pass} = req.body
+	let { title, description, pass } = req.body
+	pass = await decrypt(pass, process.env.password)
+	
 	if (!req.file) return res.status(400).send('File upload failed')
 	if (!title && !description && !pass) return res.status(400).send('Missing parameters')
 	if (pass != process.env.password) return res.status(401).send('Incorrect password')
