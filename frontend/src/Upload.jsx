@@ -10,6 +10,29 @@ export default function Upload() {
 	const [description, setDescription] = useState('')
 	const [password, setPassword] = useState('')
 
+	function encrypt(text, key) {
+		const iv = crypto.getRandomValues(new Uint8Array(16))
+		const cipher = new TextEncoder().encode(text)
+		const keyBuffer = new TextEncoder().encode(key)
+		return window.crypto.subtle.importKey('raw', keyBuffer, 'AES-GCM', false, ['encrypt']).then((cryptoKey) =>
+			window.crypto.subtle
+				.encrypt(
+					{
+						name: 'AES-GCM',
+						iv: iv
+					},
+					cryptoKey,
+					cipher
+				)
+				.then((encrypted) => {
+					const encryptedArray = new Uint8Array(encrypted)
+					const result = new Uint8Array(iv.byteLength + encryptedArray.byteLength)
+					result.set(iv, 0)
+					result.set(encryptedArray, iv.byteLength)
+					return btoa(String.fromCharCode.apply(null, result))
+				})
+		)
+	}
 	const handleDragEnter = (e) => {
 		e.preventDefault()
 		e.stopPropagation()
@@ -48,7 +71,7 @@ export default function Upload() {
 		const formData = new FormData()
 		formData.append('title', title)
 		formData.append('description', description)
-		formData.append('pass', password)
+		formData.append('pass', await encrypt(password, password))
 		if (image) {
 			formData.append('file', image)
 		}
